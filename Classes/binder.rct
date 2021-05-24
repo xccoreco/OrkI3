@@ -1,22 +1,102 @@
 set BoundStatements <- make BoundStatement array(0);
+set FunctionSymbols <- make FunctionSymbol array(0);
 
 function Bind()
 {
+    // registering all Functions
     from (i <- 0) to Statements->GetLength() -1
     {
-        if (~[Statements]->Name = "func")
+        if (~Statements[i]->Name = "func")
         {
-            BindFunctionStatement();
+            FunctionSymbols->Push(CreateFunctionSymbol(~Statements[i]->Args));
         }
         else
         {
             Print("[!] Only Function Statements are allowed globally!");
-            die();
+            die(0);
         }
+    }
+
+    // binding all Functions
+    from (i <- 0) to Statements->GetLength() -1
+    {
+        BoundStatements->Push(BindFunctionStatement(Statements[i]));
     }
 }
 
-function BindFunctionStatement()
+function BindStatement(stmt Statement, fn FunctionSymbol) BoundStatements
 {
+    if (stmt->Name = "call")
+        return BindCallStatement(stmt, fn);
+    if (stmt->Name = "return")
+        return BindReturnStatement(stmt, fn);
+    Print("[!] Expecting Statement, got: " + stmt->Name);
+}
 
+function BindCallStatement(stmt Statement, fn FunctionSymbol) BoundStatement
+{
+    var stmtargs <- stmt->Args;
+    var functionSymbol <- GetFunctionSymbol(~Token(stmtargs[0])->Value);
+    var args <- Statement(stmtargs[1]);
+
+    if (~args->Args->GetLength() != ~functionSymbol->Parameters->GetLength())
+    {
+        Print("[!] Wrong Number of Arguments! Function " + functionSymbol->Name + " expected " + string(~functionSymbol->Parameters->GetLength()) + " Args but got " + ~args->Args->GetLength() + "!");
+        die(0);
+    }
+
+    var newArgs <- make any array(0);
+    newArgs->Push(functionSymbol);
+
+    return make BoundStatement("call", newArgs, functionSymbol->Type);
+}
+
+function BindFunctionStatement(stmt Statement) BoundStatement
+{
+    var args <- stmt->Args;
+    var blockStatementArgs <- ~Statement(args[3])->Args;
+    var func <- GetFunctionSymbol(~Token(args[0])->Value);
+    var boundStatements <- make BoundStatement array(0);
+
+    from (i <- 0) to blockStatementArgs->GetLength() -1
+    {
+        boundStatements->Push(BindStatement(Statement(blockStatementArgs[i]), func));
+    }
+}
+
+function CreateFunctionSymbol(args anyArr) FunctionSymbol
+{
+    var name <- ~Token(args[0])->Value;
+    var params <- make ParameterSymbol array(0);
+    var ftype <- ~Token(args[2])->Value;
+    var isMain <- false;
+
+    if (ftype = "main") { isMain <- true; ftype <- "bool"; }
+
+    var paramStatement <- Statement(args[1]);
+    var paramArgs <- paramStatement->Args;
+    for (var i <- 0; i < paramArgs->GetLength(); i <-+ 2)
+    {
+        params->Push(make ParameterSymbol(~Token(paramArgs[i])->Value, ~Token(paramArgs[i + 1])->Value));
+    }
+
+    return make FunctionSymbol(name, params, ftype, isMain);
+}
+
+function GetFunctionSymbol(name string) FunctionSymbol
+{
+    from (i <- 0) to FunctionSymbols->GetLength() -1
+        if (~FunctionSymbols[i]->Name = name)
+            return FunctionSymbols[i];
+        
+    Print("[!] Could not find Function " + name);
+    die(0);
+}
+
+function FunctionExists(name string) bool
+{
+    from (i <- 0) to FunctionSymbols->GetLength() -1
+        if (~FunctionSymbols[i]->Name = name) return true;
+
+    return false;
 }

@@ -29,6 +29,10 @@ function ParseExpression() Expression
     Skip();
     if (~Cur()->Type = "string") return make Expression("string", ~Consume("string")->Value, Expression(nil), Expression(nil));
     if (~Cur()->Type = "int") return make Expression("int", int(~Consume("int")->Value), Expression(nil), Expression(nil));
+    
+    if (~Cur()->Type = "truekw") return make Expression("bool", ~Consume("truekw")->Value = "true", Expression(nil), Expression(nil));
+    if (~Cur()->Type = "falsekw") return make Expression("bool", ~Consume("falsekw")->Value = "true", Expression(nil), Expression(nil));
+    
     if (~Cur()->Type = "identifier") return make Expression("variable", ~Consume("identifier")->Value, Expression(nil), Expression(nil));
     return make Expression("nil", nil, Expression(nil), Expression(nil));
 }
@@ -46,20 +50,18 @@ function ParseFunction() Statement
     {
         args->Push(ParseParameters()); types <-+ "s";
     }
+    else
+    {
+        args->Push(make Statement("params", make any array(0), "")); types <-+ "s";
+    }
+
 
     Consume("closeparenthesis");
     Consume("colon");
     args->Push(Consume("identifier")); types <-+ "t";
     args->Push(ParseBlockStatement()); types <-+ "s";
 
-    FunctionSymbols->Push(CreateFunctionSymbol(args));
-
     return make Statement(funckw->Value, args, types);
-}
-
-function CreateFunctionSymbol(agrs anyArr) FunctionSymbol
-{
-    var name <- "";
 }
 
 function ParseArguments() Statement

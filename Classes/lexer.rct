@@ -38,7 +38,7 @@ function Lex()
         if (isLetter(Current())) { var kw <- LexKeyword(); Tokens->Push(make Token(IdentifyKeyword(kw), kw, p)); continue; }
 
         //numbers
-        if (isDigit(Current())) { Tokens->Push(make Token("number", LexNumber(), p)); continue; }
+        if (isDigit(Current())) { Tokens->Push(make Token("int", LexNumber(), p)); continue; }
 
         //comments
         if (Current() = "#") { Tokens->Push(make Token("comment", LexComment(), p)); Step(1); continue; }

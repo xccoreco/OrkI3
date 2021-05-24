@@ -1,9 +1,8 @@
 class ParameterSymbol
 {
-    function Constructor(name string, expression BoundExpression)
+    function Constructor(name string, ptype string)
     {
         set Name <- name;
-        set Expression <- expression;
-        set Type <- expression->Type;
+        set Type <- ptype;
     }
 }

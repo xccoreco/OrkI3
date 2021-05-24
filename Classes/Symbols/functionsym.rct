@@ -1,10 +1,11 @@
 class FunctionSymbol
 {
-    function Constructor(name string, parameters ParameterSymbolArr, ftype string)
+    function Constructor(name string, parameters ParameterSymbolArr, ftype string, ismain bool)
     {
         set Name <- name;
         set Parameters <- parameters;
         set Type <- ftype;
+        set IsMain <- ismain;
     }
 
     set function GetParam(index int) ParameterSymbol
