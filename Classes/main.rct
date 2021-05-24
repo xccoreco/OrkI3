@@ -82,6 +82,12 @@ function PrintStatement(stmt Statement, off string)
             Print(string(arg->Value)); SetConsoleForeground(15);
             continue;
         }
+        else if (atype = "n")
+        {
+            Write(offset + "   └-> "); SetConsoleForeground(3);
+            Print("nil"); SetConsoleForeground(15);
+            continue;
+        }
         else
         {
             var arg <- Statement(args[ii]);

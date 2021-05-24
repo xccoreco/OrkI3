@@ -160,7 +160,16 @@ function ParseReturn() Statement
     var args <- make any array(0);
     var types <- "";
 
-    args->Push(ParseExpression()); types <-+ "e";
+    Skip();
+
+    if (~Cur()->Type != "semicolon")
+    {
+        args->Push(ParseExpression()); types <-+ "e";
+    }
+    else
+    {
+        args->Push(nil); types <-+ "n";
+    }
     Consume("semicolon");
 
     return make Statement(returnkw->Value, args, types);

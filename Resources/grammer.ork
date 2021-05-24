@@ -6,4 +6,5 @@ func mainfunc(): main
 func secondfunc(text: string): void
 {
     print(text);
+    return;
 }

@@ -27,8 +27,8 @@ function BindStatement(stmt Statement, fn FunctionSymbol) BoundStatement
 {
     if (stmt->Name = "call")
         return BindCallStatement(stmt, fn);
-    //if (stmt->Name = "return")
-        //return BindReturnStatement(stmt, fn);
+    if (stmt->Name = "return")
+        return BindReturnStatement(stmt, fn);
     Print("[!] Expecting Statement, got: " + stmt->Name);
     die(0);
     return make BoundStatement("", make any array(0), "", "void");
@@ -98,7 +98,43 @@ function BindCallStatement(stmt Statement, fn FunctionSymbol) BoundStatement
     }
 
     return make BoundStatement("call", newArgs, "", functionSymbol->Type);
-    //return make BoundStatement("call", make any array(0), "", "");
+}
+
+function BindReturnStatement(stmt Statement, fn FunctionSymbol) BoundStatement
+{
+    var args <- stmt->Args;
+    var noExp <- ((args[0]) = nil);
+    var exp <- BoundExpression(nil);
+
+    if (!noExp)
+        exp <- BindExpression(Expression(args[0]), fn);
+
+    if (fn->Type != "void" && noExp)
+    {
+        Print("[!] Return is missing a value!");
+        die(0);
+        return make BoundStatement("", make any array(0), "", "");
+    }
+
+    if (fn->Type = "void" && !noExp)
+    {
+        Print("[!] Return isnt supposed to return something in void function!");
+        die(0);
+        return make BoundStatement("", make any array(0), "", "");
+    }
+
+    if (!noExp)
+    if (fn->Type != exp->Type)
+    {
+        Print("[!] Return type doesnt match type of Function!");
+        die(0);
+        return make BoundStatement("", make any array(0), "", "");
+    }
+
+    var newargs <- make any array(0);
+    newargs->Push(exp);
+
+    return make BoundStatement("return", newargs, "", fn->Type);
 }
 
 function BindFunctionStatement(stmt Statement)
