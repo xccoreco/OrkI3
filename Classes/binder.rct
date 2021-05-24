@@ -44,6 +44,8 @@ function BindExpression(ex Expression, fn FunctionSymbol) BoundExpression
         return make BoundExpression("bool", ex->Value, BoundExpression(nil), BoundExpression(nil), "bool");
     if (ex->Type = "variable")
         return BindVariableExpression(ex, fn);
+    if (ex->Type = "call")
+        return BindCallExpression(ex, fn);
 
     Print("[!] Expecting Expression, got: " + ex->Type);
     die(0);
@@ -56,13 +58,27 @@ function BindVariableExpression(ex Expression, fn FunctionSymbol) BoundExpressio
 
     if (param = -1)
     {
-        Print("Couldnt find Variable " + string(ex->Value) + "!");
+        Print("[!] Couldnt find Variable " + string(ex->Value) + "!");
         die(0);
         return make BoundExpression("", "", BoundExpression(nil), BoundExpression(nil), "");
     }
 
     var paramSym <- fn->GetParam(param);
     return make BoundExpression("parameter", paramSym, BoundExpression(nil), BoundExpression(nil), paramSym->Type);
+}
+
+function BindCallExpression(ex Expression, fn FunctionSymbol) BoundExpression
+{
+    var call <- BindCallStatement(Statement(ex->Value), fn);
+
+    if (call->Type = "void")
+    {
+        Print("[!] Cant use void Function as Expression!");
+        die(0);
+        return make BoundExpression("", "", BoundExpression(nil), BoundExpression(nil), "");
+    }
+
+    return make BoundExpression("call", call, BoundExpression(nil), BoundExpression(nil), call->Type);
 }
 
 function BindCallStatement(stmt Statement, fn FunctionSymbol) BoundStatement

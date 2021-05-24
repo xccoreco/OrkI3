@@ -1,10 +1,10 @@
 func mainfunc(): main
 {
-    secondfunc("arg0");
+    print(secondfunc("arg0"));
 }
 
-func secondfunc(text: string): void
+func secondfunc(text: string): string
 {
     print(text);
-    return;
+    return text;
 }

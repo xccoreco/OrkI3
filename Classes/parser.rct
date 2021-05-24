@@ -32,6 +32,7 @@ function ParseExpression() Expression
     if (~Cur()->Type = "truekw") return make Expression("bool", ~Consume("truekw")->Value = "true", Expression(nil), Expression(nil));
     if (~Cur()->Type = "falsekw") return make Expression("bool", ~Consume("falsekw")->Value = "true", Expression(nil), Expression(nil));
     
+    if (~Cur()->Type = "identifier" && ~Pek(1)->Type = "openparenthesis") return make Expression("call", ParseCall(true), Expression(nil), Expression(nil));
     if (~Cur()->Type = "identifier") return make Expression("variable", ~Consume("identifier")->Value, Expression(nil), Expression(nil));
     return make Expression("nil", nil, Expression(nil), Expression(nil));
 }
@@ -131,7 +132,7 @@ function ParseStatement() Statement
 {
     Skip();
     if (~Cur()->Type = "identifier" && ~Pek(1)->Type = "openparenthesis")
-        return ParseCall();
+        return ParseCall(false);
     else if (~Cur()->Type = "returnkw")
         return ParseReturn();
 
@@ -140,7 +141,7 @@ function ParseStatement() Statement
     return make Statement("nil", make any array(0), "");
 }
 
-function ParseCall() Statement
+function ParseCall(isExpression bool) Statement
 {
     var args <- make any array(0);
     var types <- "";
@@ -149,7 +150,9 @@ function ParseCall() Statement
     Consume("openparenthesis");
     args->Push(ParseArguments()); types <-+ "s";
     Consume("closeparenthesis");
-    Consume("semicolon");
+
+    if (!isExpression)
+        Consume("semicolon");
 
     return make Statement("call", args, types);
 }
