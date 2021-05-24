@@ -1,8 +1,8 @@
 class Token
 {
-    function Constructor(name string, value string)
+    function Constructor(ttype string, value string)
     {
-        set Type <- name;
+        set Type <- ttype;
         set Value <- value;
     }
 }

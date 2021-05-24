@@ -38,7 +38,7 @@ function Lex()
         if (isDigit(Current())) { Tokens->Push(make Token("number", LexNumber())); continue; }
 
         //comments
-        if (Current() = "#") { Tokens->Push(make Token("whitespace", LexComment())); Step(1); continue; }
+        if (Current() = "#") { Tokens->Push(make Token("comment", LexComment())); Step(1); continue; }
 
         Print("[!] Unkown Symbol! Got: " + Current());
         die(0);

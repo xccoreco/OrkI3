@@ -5,12 +5,22 @@ function Parse()
     Pointer <- 0;
     while (~Cur()->Type != "EOF")
     {
+        Skip();
+
         if (~Cur()->Type = "keyword")
         {
             if (~Cur()->Value = "print")
             {
                 Statements->Push(ParsePrint());
             }
+        }
+        else if (~Cur()->Type = "EOF")
+        {
+            return;
+        }
+        else
+        {
+            Print("[!] Onyl Statements are allowed globally! Got: " + ~Cur()->Type);
         }
     }
 }
@@ -19,7 +29,7 @@ function ParseExpression() Token
 {
     if (~Cur()->Type = "string") return Consume("string");
     if (~Cur()->Type = "number") return Consume("number");
-    return make Token("nil", "")
+    return make Token("nil", "");
 }
 
 function ParsePrint() Statement
@@ -30,26 +40,26 @@ function ParsePrint() Statement
     Consume("openparenthese");
     args->Push(ParseExpression());
     Consume("closeparenthese");
+    Consume("semicolon");
 
     return make Statement(printkw->Value, args);
 }
 
 function Cur() Token { return Pek(0); }
 function Pek(offset int) Token { return Tokens[Pointer + offset] }
-function Skip() { while (~Cur()->Type = "whitespace") { Step(1); } }
+function Skip() { while (~Cur()->Type = "whitespace" || ~Cur()->Type = "comment") { Step(1); } }
 function Consume(name string) Token
 { 
     Skip();
     if (~Cur()->Type = name)
     {
-        var token <- Cur();
         Step(1);
-        return token;
+        return Pek(-1);
     }
     else
     {
-        Print("[!] Expected " + name + " but got " + ~Cur()->Type);
+        Print("[!] Exprected Token " + name + " but got: " + ~Cur()->Type);
         die(0);
-        return Cur();
     }
+    return Token(nil);
 }

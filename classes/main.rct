@@ -1,20 +1,23 @@
 package sys; use sys;
 package io;
 
-#attach("./lexer.rct");
-#attach("./token.rct");
 #attach("./helpers.rct");
-#attach("./parser.rct");
+#attach("./token.rct");
 #attach("./statement.rct");
+#attach("./lexer.rct");
+#attach("./parser.rct");
 
-#copyFolder("C:\Users\djlw7\Desktop\OrkI3\res");
+//copyFolder("C:\Users\djlw7\Desktop\OrkI3\res");
+#copyFolder("/home/redcube/git/OrkI3/res");
 
-Print("Hello world!");
+Print("ORKI3 Interpreter --  written in ReCT");
 
 set Code <- io::ReadFile("./res/grammer.ork");
+
 Lex();
 
-/*from (i <- 0) to Tokens->GetLength() -1
+Print(Char(10) + "Lexer Output:");
+from (i <- 0) to Tokens->GetLength() -1
 {
     if (~Tokens[i]->Type = "whitespace") continue;
     Write("[ Token: "); SetConsoleForeground(10);
@@ -22,16 +25,23 @@ Lex();
     Write(", Value: "); SetConsoleForeground(12);
     Write(~~~Tokens[i]->Value->Replace(Char(10), "\n")->Replace(Char(13), "\r")); SetConsoleForeground(15);
     Print(" ]");
-}*/
-Print("?");
+}
+
 Parse();
 
-/*from (i <- 0) to Statements->Length() -1
+Print(Char(10) + "Parser Output:");
+from (i <- 0) to Statements->GetLength() -1
 {
-    Write("[ Statement: "); SetConsoleForeground(10);
-    Write(~Statements[i]->Name); SetConsoleForeground(15);
-    Write(", Value: "); SetConsoleForeground(12);
+    Write("- "); SetConsoleForeground(12);
+    Print(~Statements[i]->Name); SetConsoleForeground(15);
+
     var args <- ~Statements[i]->Args;
-    Write(~Token(args[0])->Type); SetConsoleForeground(15);
-    Print(" ]");
-}*/
+    from (ii <- 0) to args->GetLength() - 1
+    {
+        var arg <- Token(args[ii]);
+        Write("   └-> "); SetConsoleForeground(10);
+        Write(arg->Type); SetConsoleForeground(15);
+        Write(": "); SetConsoleForeground(3);
+        Print(string(arg->Value)); SetConsoleForeground(15);
+    }
+}
