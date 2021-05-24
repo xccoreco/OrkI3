@@ -1,0 +1,11 @@
+class BoundExpression
+{
+    function Constructor(etype string, val any, left BoundExpression, right BoundExpression, ttype string)
+    {
+        set eType <- etype;
+        set Value <- val;
+        set Left <- left;
+        set Right <- right;
+        set Type <- ttype;
+    }
+}

@@ -1,13 +1,23 @@
 package sys; use sys;
 package io;
 
+//other Scripts
 #attach("./helpers.rct");
-#attach("./keywords.rct");
-#attach("./tokens.rct");
-#attach("./statements.rct");
-#attach("./expressions.rct");
 #attach("./lexer.rct");
 #attach("./parser.rct");
+#attach("./binder.rct");
+
+// TypeDefs
+#attach("./Types/keywords.rct");
+#attach("./Types/tokens.rct");
+#attach("./Types/statements.rct");
+#attach("./Types/expressions.rct");
+#attach("./Types/boundexpressions.rct");
+
+// Symbol-TypeDefs
+#attach("./Symbols/functionsym.rct");
+#attach("./Symbols/parametersym.rct");
+#attach("./Symbols/variablesym.rct");
 
 //copyFolder("C:\Users\djlw7\Desktop\OrkI3\Resources");
 #copyFolder("/home/redcube/git/OrkI3/Resources");

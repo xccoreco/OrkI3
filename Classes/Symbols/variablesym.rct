@@ -1,0 +1,9 @@
+class VariableSymbol
+{
+    function Constructor(name string, expression BoundExpression)
+    {
+        set Name <- name;
+        set Expression <- expression;
+        set Type <- expression->Type;
+    }
+}
