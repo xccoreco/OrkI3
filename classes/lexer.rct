@@ -21,8 +21,8 @@ function Lex()
         if (Current() = ";") { Tokens->Push(make Token("semicolon", Current())); Step(1); continue; }
 
         //brackets
-        if (Current() = "(") { Tokens->Push(make Token("openparenthese", Current())); Step(1); continue; }
-        if (Current() = ")") { Tokens->Push(make Token("closeparenthese", Current())); Step(1); continue; }
+        if (Current() = "(") { Tokens->Push(make Token("openparenthesis", Current())); Step(1); continue; }
+        if (Current() = ")") { Tokens->Push(make Token("closeparenthesis", Current())); Step(1); continue; }
         if (Current() = "{") { Tokens->Push(make Token("openbrace", Current())); Step(1); continue; }
         if (Current() = "}") { Tokens->Push(make Token("closebrace", Current())); Step(1); continue; }
         if (Current() = "[") { Tokens->Push(make Token("openbracket", Current())); Step(1); continue; }
