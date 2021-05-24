@@ -20,7 +20,7 @@ function Parse()
         }
         else
         {
-            Print("[!] Only Statements are allowed globally! Got: " + ~Cur()->Type);
+            Print("[!] Only functions are allowed globally! Got: " + ~Cur()->Type);
             die(0);
         }
     }

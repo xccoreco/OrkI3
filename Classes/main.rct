@@ -5,15 +5,16 @@ package io;
 #attach("./keywords.rct");
 #attach("./tokens.rct");
 #attach("./statements.rct");
+#attach("./expressions.rct");
 #attach("./lexer.rct");
 #attach("./parser.rct");
 
 //copyFolder("C:\Users\djlw7\Desktop\OrkI3\Resources");
 #copyFolder("/home/redcube/git/OrkI3/Resources");
 
-Print("ORKI3 Interpreter --  written in ReCT");
+Print("ORKI3 Interpreter --  written in ReCT  [ (c)2021 ProfessorDJ | BytespaceTK ]");
 
-set Code <- io::ReadFile("./res/grammer.ork");
+set Code <- io::ReadFile("./Resources/grammer.ork");
 
 Lex();
 
