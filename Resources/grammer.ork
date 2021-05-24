@@ -1,6 +1,6 @@
 func mainfunc(): main
 {
-    print(secondfunc("arg0"));
+    print(secondfunc("Hello World!"));
 }
 
 func secondfunc(text: string): string

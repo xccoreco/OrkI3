@@ -104,11 +104,11 @@ function BindCallStatement(stmt Statement, fn FunctionSymbol) BoundStatement
     }
 
     var newArgs <- make any array(0);
-    newArgs->Push(functionSymbol);
-
     var param <- make any array(0);
-
     var expargs <- args->Args;
+
+
+    newArgs->Push(functionSymbol);
 
     from (i <- 0) to expargs->GetLength() - 1
     {
@@ -123,7 +123,7 @@ function BindCallStatement(stmt Statement, fn FunctionSymbol) BoundStatement
         param->Push(bexp);
     }
 
-    newArgs->Push(expargs);
+    newArgs->Push(param);
 
     return make BoundStatement("call", newArgs, functionSymbol->Type);
 }

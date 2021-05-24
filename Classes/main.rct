@@ -120,4 +120,6 @@ from (i <- 0) to FunctionSymbols->GetLength() -1
 }
 Print("v");
 
+Print(Char(10) + "Binder Output:");
+
 Evaluate();

@@ -6,6 +6,8 @@ function Evaluate()
 
 function EvaluateFunction(fn FunctionSymbol, params anyArr) any
 {
+    if (fn->Name = "print") return EvaluatePrint(params);
+
     var bstatements <- fn->BStatements; 
     from (i <- 0) to bstatements->GetLength() -1
     {
@@ -61,7 +63,7 @@ function EvaluateExpression(ex BoundExpression, params anyArr) any
     if (ex->eType = "string") return ex->Value;
     if (ex->eType = "int") return ex->Value;
     if (ex->eType = "bool") return ex->Value;
-    if (ex->eType = "parameter") return params[int(ex->Value)];
+    if (ex->eType = "parameter") return ~BoundExpression(params[int(ex->Value)])->Value;
     if (ex->eType = "call") 
     {
         var info <- anyArr(ex->Value);
@@ -82,4 +84,11 @@ function MainFunction() FunctionSymbol
     Print("[!] File doesnt have Main Function!");
     die(0);
     return FunctionSymbols[0];
+}
+
+// Built in functions
+function EvaluatePrint(params anyArr) any
+{
+    Print(string(params[0]));
+    return nil;
 }
