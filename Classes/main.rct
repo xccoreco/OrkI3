@@ -36,18 +36,32 @@ from (i <- 0) to Tokens->GetLength() -1
 Parse();
 
 Print(Char(10) + "Parser Output:");
-from (i <- 0) to Statements->GetLength() -1
-{
-    Write("- "); SetConsoleForeground(12);
-    Print(~Statements[i]->Name); SetConsoleForeground(15);
 
-    var args <- ~Statements[i]->Args;
+from (i <- 0) to Statements->GetLength() - 1
+    PrintStatement(Statements[i], "");
+
+function PrintStatement(stmt Statement, off string)
+{
+    Write(off + "   └-> "); SetConsoleForeground(12);
+    Print(stmt->Name); SetConsoleForeground(15);
+
+    var offset <- off + "      ";
+
+    var args <- stmt->Args;
     from (ii <- 0) to args->GetLength() - 1
     {
-        var arg <- Token(args[ii]);
-        Write("   └-> "); SetConsoleForeground(10);
-        Write(arg->Type); SetConsoleForeground(15);
-        Write(": "); SetConsoleForeground(3);
-        Print(string(arg->Value)); SetConsoleForeground(15);
+        try
+        {
+            var arg <- Token(args[ii]);
+            Write(offset + "   └-> "); SetConsoleForeground(10);
+            Write(arg->Type); SetConsoleForeground(15);
+            Write(": "); SetConsoleForeground(3);
+            Print(string(arg->Value)); SetConsoleForeground(15);
+        }
+        catch
+        {
+            var arg <- Statement(args[ii]);
+            PrintStatement(arg, offset);
+        }
     }
 }

@@ -1,5 +1,9 @@
-func main(): bool
+func mainfunc(): main
 {
-    print("stuff");
-    return 0;
+    secondfunc("arg0");
+}
+
+func secondfunc(text: string): void
+{
+    print(text);
 }

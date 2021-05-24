@@ -53,3 +53,15 @@ function GenWhitespace(len int, max int) string
     }
     return str;
 }
+
+function GetLineNum(pos int) int
+{
+    var line <- 1;
+
+    from (i <- 0) to pos
+    {
+        if (Code->Substring(i,1) = Char(10))
+            line++;
+    }
+    return line;
+}

@@ -5,8 +5,6 @@ Keywords->Push("return");
 Keywords->Push("for");
 Keywords->Push("while");
 
-//datatypes
-Keywords->Push("bool");
-Keywords->Push("int");
-Keywords->Push("float");
-Keywords->Push("string");
+//true false
+Keywords->Push("true");
+Keywords->Push("false");
