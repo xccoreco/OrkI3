@@ -8,5 +8,5 @@ func mainfunc(): main
 
 func getint(): int
 {
-    return 3;
+    return 10;
 }
