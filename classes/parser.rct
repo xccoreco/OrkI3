@@ -21,6 +21,7 @@ function Parse()
         else
         {
             Print("[!] Onyl Statements are allowed globally! Got: " + ~Cur()->Type);
+            die(0);
         }
     }
 }

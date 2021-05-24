@@ -1,0 +1,12 @@
+set Keywords <- make string array(0);
+//controls
+Keywords->Push("func");
+Keywords->Push("return");
+Keywords->Push("for");
+Keywords->Push("while");
+
+//datatypes
+Keywords->Push("bool");
+Keywords->Push("int");
+Keywords->Push("float");
+Keywords->Push("string");

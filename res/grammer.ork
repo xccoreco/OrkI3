@@ -1,7 +1,5 @@
-print("stuff");
-
-#func main(): bool
-#{
-#    print("stuff");
-#    return 0;
-#}
+func main(): bool
+{
+    print("stuff");
+    return 0;
+}

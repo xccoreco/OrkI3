@@ -2,8 +2,9 @@ package sys; use sys;
 package io;
 
 #attach("./helpers.rct");
-#attach("./token.rct");
-#attach("./statement.rct");
+#attach("./keywords.rct");
+#attach("./tokens.rct");
+#attach("./statements.rct");
 #attach("./lexer.rct");
 #attach("./parser.rct");
 
@@ -17,13 +18,17 @@ set Code <- io::ReadFile("./res/grammer.ork");
 Lex();
 
 Print(Char(10) + "Lexer Output:");
+
+var longestkw <- LongestInList(GetTypes(Tokens));
+var longestval <- LongestInList(GetValues(Tokens));
 from (i <- 0) to Tokens->GetLength() -1
 {
     if (~Tokens[i]->Type = "whitespace") continue;
     Write("[ Token: "); SetConsoleForeground(10);
-    Write(~Tokens[i]->Type); SetConsoleForeground(15);
+    Write(~Tokens[i]->Type); SetConsoleForeground(15); Write(GenWhitespace(~~Tokens[i]->Type->GetLength(), longestkw));
     Write(", Value: "); SetConsoleForeground(12);
     Write(~~~Tokens[i]->Value->Replace(Char(10), "\n")->Replace(Char(13), "\r")); SetConsoleForeground(15);
+    Write(GenWhitespace(~~Tokens[i]->Value->GetLength(), longestval));
     Print(" ]");
 }
 

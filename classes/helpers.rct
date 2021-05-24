@@ -15,3 +15,41 @@ function isDigit(char string) bool
     
     return false;
 }
+
+function GetTypes(arr TokenArr) stringArr
+{
+    var strarr <- make string array(0);
+    from (i <- 0) to arr->GetLength() -1
+        strarr->Push(~arr[i]->Type);
+    
+    return strarr;
+}
+
+function GetValues(arr TokenArr) stringArr
+{
+    var strarr <- make string array(0);
+    from (i <- 0) to arr->GetLength() -1
+        strarr->Push(~arr[i]->Value);
+    
+    return strarr;
+}
+
+function LongestInList(arr stringArr) int
+{
+    var len <- 0;
+    from (i <- 0) to arr->GetLength() -1
+    {
+        if (~arr[i]->GetLength() > len) len <- ~arr[i]->GetLength();
+    }
+    return len;
+}
+
+function GenWhitespace(len int, max int) string
+{
+    var str <- "";
+    from (i <- len) to max
+    {
+        str <-+ " ";
+    }
+    return str;
+}
