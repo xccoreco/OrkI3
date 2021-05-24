@@ -1,0 +1,8 @@
+class Token
+{
+    function Constructor(name string, value string)
+    {
+        set Type <- name;
+        set Value <- value;
+    }
+}

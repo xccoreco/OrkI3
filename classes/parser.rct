@@ -1,0 +1,55 @@
+set Statements <- make Statement array(0);
+
+function Parse()
+{
+    Pointer <- 0;
+    while (~Cur()->Type != "EOF")
+    {
+        if (~Cur()->Type = "keyword")
+        {
+            if (~Cur()->Value = "print")
+            {
+                Statements->Push(ParsePrint());
+            }
+        }
+    }
+}
+
+function ParseExpression() Token
+{
+    if (~Cur()->Type = "string") return Consume("string");
+    if (~Cur()->Type = "number") return Consume("number");
+    return make Token("nil", "")
+}
+
+function ParsePrint() Statement
+{
+    var printkw <- Consume("keyword");
+    var args <- make any array(0);
+
+    Consume("openparenthese");
+    args->Push(ParseExpression());
+    Consume("closeparenthese");
+
+    return make Statement(printkw->Value, args);
+}
+
+function Cur() Token { return Pek(0); }
+function Pek(offset int) Token { return Tokens[Pointer + offset] }
+function Skip() { while (~Cur()->Type = "whitespace") { Step(1); } }
+function Consume(name string) Token
+{ 
+    Skip();
+    if (~Cur()->Type = name)
+    {
+        var token <- Cur();
+        Step(1);
+        return token;
+    }
+    else
+    {
+        Print("[!] Expected " + name + " but got " + ~Cur()->Type);
+        die(0);
+        return Cur();
+    }
+}

@@ -1,0 +1,37 @@
+package sys; use sys;
+package io;
+
+#attach("./lexer.rct");
+#attach("./token.rct");
+#attach("./helpers.rct");
+#attach("./parser.rct");
+#attach("./statement.rct");
+
+#copyFolder("C:\Users\djlw7\Desktop\OrkI3\res");
+
+Print("Hello world!");
+
+set Code <- io::ReadFile("./res/grammer.ork");
+Lex();
+
+/*from (i <- 0) to Tokens->GetLength() -1
+{
+    if (~Tokens[i]->Type = "whitespace") continue;
+    Write("[ Token: "); SetConsoleForeground(10);
+    Write(~Tokens[i]->Type); SetConsoleForeground(15);
+    Write(", Value: "); SetConsoleForeground(12);
+    Write(~~~Tokens[i]->Value->Replace(Char(10), "\n")->Replace(Char(13), "\r")); SetConsoleForeground(15);
+    Print(" ]");
+}*/
+Print("?");
+Parse();
+
+/*from (i <- 0) to Statements->Length() -1
+{
+    Write("[ Statement: "); SetConsoleForeground(10);
+    Write(~Statements[i]->Name); SetConsoleForeground(15);
+    Write(", Value: "); SetConsoleForeground(12);
+    var args <- ~Statements[i]->Args;
+    Write(~Token(args[0])->Type); SetConsoleForeground(15);
+    Print(" ]");
+}*/

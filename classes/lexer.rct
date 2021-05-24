@@ -1,0 +1,101 @@
+set Pointer <- 0;
+set Tokens <- make Token array(0);
+
+function Lex()
+{
+    while (!EOF())
+    {
+        //whitespaces
+        if (Current() = " ") { Tokens->Push(make Token("whitespace", Current())); Step(1); continue; }
+        if (Current() = Char(10)) { Tokens->Push(make Token("whitespace", Current())); Step(1); continue; }
+        if (Current() = Char(13)) { Tokens->Push(make Token("whitespace", Current())); Step(1); continue; }
+
+        //opertators
+        if (Current() = "+") { Tokens->Push(make Token("plus", Current())); Step(1); continue; }
+        if (Current() = "-") { Tokens->Push(make Token("minus", Current())); Step(1); continue; }
+        if (Current() = "/") { Tokens->Push(make Token("divide", Current())); Step(1); continue; }
+        if (Current() = "*") { Tokens->Push(make Token("multiply", Current())); Step(1); continue; }
+
+        //colons
+        if (Current() = ":") { Tokens->Push(make Token("colon", Current())); Step(1); continue; }
+        if (Current() = ";") { Tokens->Push(make Token("semicolon", Current())); Step(1); continue; }
+
+        //brackets
+        if (Current() = "(") { Tokens->Push(make Token("openparenthese", Current())); Step(1); continue; }
+        if (Current() = ")") { Tokens->Push(make Token("closeparenthese", Current())); Step(1); continue; }
+        if (Current() = "{") { Tokens->Push(make Token("openbrace", Current())); Step(1); continue; }
+        if (Current() = "}") { Tokens->Push(make Token("closebrace", Current())); Step(1); continue; }
+        if (Current() = "[") { Tokens->Push(make Token("openbracket", Current())); Step(1); continue; }
+        if (Current() = "]") { Tokens->Push(make Token("closebracket", Current())); Step(1); continue; }
+
+        //strings
+        if (Current() = Char(34)) { Tokens->Push(make Token("string", LexString())); continue; }
+
+        //keywords
+        if (isLetter(Current())) { Tokens->Push(make Token("keyword", LexKeyword())); continue; }
+
+        //numbers
+        if (isDigit(Current())) { Tokens->Push(make Token("number", LexNumber())); continue; }
+
+        //comments
+        if (Current() = "#") { Tokens->Push(make Token("whitespace", LexComment())); Step(1); continue; }
+
+        Print("[!] Unkown Symbol! Got: " + Current());
+        die(0);
+    }
+     Tokens->Push(make Token("EOF", "---"));
+}
+
+function LexString() string
+{
+    Step(1);
+    var str <- "";
+
+    while (Current() != Char(34))
+    {
+        if (EOF()) { Print("[!] Unterminated string literal!"); die(0); }
+        str <-+ Current();
+        Step(1);
+    }
+    Step(1);
+    return str;
+}
+
+function LexComment() string
+{
+    Step(1);
+
+    while (Current() != Char(10))
+    {
+        Step(1);
+        if (EOF()) return "";
+    }
+    return "";
+}
+
+function LexKeyword() string
+{
+    var str <- "";
+    while (isLetter(Current()) && !EOF())
+    {
+        str <-+ Current();
+        Step(1);
+    }
+    return str;
+}
+
+function LexNumber() string
+{
+    var str <- "";
+    while (isDigit(Current()) && !EOF())
+    {
+        str <-+ Current();
+        Step(1);
+    }
+    return str;
+}
+
+function Current() string { return Peek(0); }
+function Peek(offset int) string { return Code->Substring(Pointer + offset, 1); }
+function EOF() bool { return Pointer >= Code->GetLength(); }
+function Step(amount int) { Pointer <-+ amount; }

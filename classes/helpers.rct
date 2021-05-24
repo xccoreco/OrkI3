@@ -1,0 +1,17 @@
+function isLetter(char string) bool
+{
+    var charset <- "abcdefghijklmnopqrstuvwxyz";
+    from (i <- 0) to charset->GetLength() -1
+        if (charset->Substring(i,1) = char) return true;
+    
+    return false;
+}
+
+function isDigit(char string) bool
+{
+    var charset <- "1234567890";
+    from (i <- 0) to charset->GetLength() -1
+        if (charset->Substring(i,1) = char) return true;
+    
+    return false;
+}
