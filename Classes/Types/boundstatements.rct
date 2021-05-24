@@ -1,0 +1,10 @@
+class BoundStatement
+{
+    function Constructor(name string, args anyArr, types string, ttype string)
+    {
+        set Name <- name;
+        set Args <- args;
+        set Types <- types;
+        set Type <- ttype;
+    }
+}

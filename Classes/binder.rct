@@ -1,0 +1,22 @@
+set BoundStatements <- make BoundStatement array(0);
+
+function Bind()
+{
+    from (i <- 0) to Statements->GetLength() -1
+    {
+        if (~[Statements]->Name = "func")
+        {
+            BindFunctionStatement();
+        }
+        else
+        {
+            Print("[!] Only Function Statements are allowed globally!");
+            die();
+        }
+    }
+}
+
+function BindFunctionStatement()
+{
+
+}

@@ -1,4 +1,5 @@
 set Statements <- make Statement array(0);
+set FunctionSymbols <- make FunctionSymbol array(0);
 
 function Parse()
 {
@@ -51,7 +52,14 @@ function ParseFunction() Statement
     args->Push(Consume("identifier")); types <-+ "t";
     args->Push(ParseBlockStatement()); types <-+ "s";
 
+    FunctionSymbols->Push(CreateFunctionSymbol(args));
+
     return make Statement(funckw->Value, args, types);
+}
+
+function CreateFunctionSymbol(agrs anyArr) FunctionSymbol
+{
+    var name <- "";
 }
 
 function ParseArguments() Statement
