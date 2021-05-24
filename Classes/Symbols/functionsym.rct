@@ -1,0 +1,7 @@
+class FunctionSymbol
+{
+    function Constructor(name string, parameters ParameterArr)
+    {
+
+    }
+}

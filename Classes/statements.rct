@@ -1,8 +1,9 @@
 class Statement
 {
-    function Constructor(name string, args anyArr)
+    function Constructor(name string, args anyArr, types string)
     {
         set Name <- name;
         set Args <- args;
+        set Types <- types;
     }
 }

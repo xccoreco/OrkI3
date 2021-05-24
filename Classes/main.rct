@@ -50,15 +50,27 @@ function PrintStatement(stmt Statement, off string)
     var args <- stmt->Args;
     from (ii <- 0) to args->GetLength() - 1
     {
-        try
+        var atype <- ~stmt->Types->Substring(ii, 1)
+
+        if (atype = "t")
         {
             var arg <- Token(args[ii]);
             Write(offset + "   └-> "); SetConsoleForeground(10);
             Write(arg->Type); SetConsoleForeground(15);
             Write(": "); SetConsoleForeground(3);
             Print(string(arg->Value)); SetConsoleForeground(15);
+            continue;
         }
-        catch
+        else if (atype = "e")
+        {
+            var arg <- Expression(args[ii]);
+            Write(offset + "   └-> "); SetConsoleForeground(14);
+            Write(arg->Type); SetConsoleForeground(15);
+            Write(": "); SetConsoleForeground(3);
+            Print(string(arg->Value)); SetConsoleForeground(15);
+            continue;
+        }
+        else
         {
             var arg <- Statement(args[ii]);
             PrintStatement(arg, offset);

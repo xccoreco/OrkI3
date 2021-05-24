@@ -23,56 +23,61 @@ function Parse()
     }
 }
 
-function ParseExpression() Token
+function ParseExpression() Expression
 {
     Skip();
-    if (~Cur()->Type = "string") return Consume("string");
-    if (~Cur()->Type = "number") return Consume("number");
-    if (~Cur()->Type = "identifier") return Consume("identifier");
-    return make Token("nil", "", 0);
+    if (~Cur()->Type = "string") return make Expression("string", ~Consume("string")->Value, Expression(nil), Expression(nil));
+    if (~Cur()->Type = "int") return make Expression("int", int(~Consume("int")->Value), Expression(nil), Expression(nil));
+    if (~Cur()->Type = "identifier") return make Expression("variable", ~Consume("identifier")->Value, Expression(nil), Expression(nil));
+    return make Expression("nil", nil, Expression(nil), Expression(nil));
 }
 
 function ParseFunction() Statement
 {
     var funckw <- Consume("funckw");
     var args <- make any array(0);
+    var types <- "";
 
-    args->Push(Consume("identifier"));
+    args->Push(Consume("identifier")); types <-+ "t";
     Consume("openparenthesis");
 
     if (~Cur()->Type = "identifier")
-        args->Push(ParseParameters());
+    {
+        args->Push(ParseParameters()); types <-+ "s";
+    }
 
     Consume("closeparenthesis");
     Consume("colon");
-    args->Push(Consume("identifier"));
-    args->Push(ParseBlockStatement());
+    args->Push(Consume("identifier")); types <-+ "t";
+    args->Push(ParseBlockStatement()); types <-+ "s";
 
-    return make Statement(funckw->Value, args);
+    return make Statement(funckw->Value, args, types);
 }
 
 function ParseArguments() Statement
 {
     var args <- make any array(0);
+    var types <- "";
 
     while (true)
     {
         Skip();
         if (~Cur()->Type = "EOF") { Print("[!] Unterminated Parenthesis!" + " [Line: " + string(GetLineNum(~Cur()->Pos)) + "]"); die(0); }
         if (~Cur()->Type = "closeparenthesis") { break; }
-        args->Push(ParseExpression());
+        args->Push(ParseExpression()); types <-+ "e";
 
         Skip();
 
         if (~Cur()->Type != "closeparenthesis") Consume("comma");
     }
 
-    return make Statement("args", args);
+    return make Statement("args", args, types);
 }
 
 function ParseParameters() Statement
 {
     var args <- make any array(0);
+    var types <- "";
 
     while (true)
     {
@@ -80,22 +85,23 @@ function ParseParameters() Statement
         if (~Cur()->Type = "EOF") { Print("[!] Unterminated Parenthesis!" + " [Line: " + string(GetLineNum(~Cur()->Pos)) + "]"); die(0); }
         if (~Cur()->Type = "closeparenthesis") { break; }
 
-        args->Push(Consume("identifier"));
-        args->Push(Consume("colon"));
-        args->Push(Consume("identifier"));
+        args->Push(Consume("identifier")); types <-+ "t";
+        Consume("colon"); 
+        args->Push(Consume("identifier")); types <-+ "t";
 
         Skip();
 
         if (~Cur()->Type != "closeparenthesis") Consume("comma");
     }
 
-    return make Statement("params", args);
+    return make Statement("params", args, types);
 }
 
 function ParseBlockStatement() Statement
 {
     Consume("openbrace");
     var args <- make any array(0);
+    var types <- "";
 
     while (true)  
     {
@@ -104,12 +110,12 @@ function ParseBlockStatement() Statement
         if (~Cur()->Type = "EOF") { Print("[!] Unterminated CodeBlock!" + " [Line: " + string(GetLineNum(~Cur()->Pos)) + "]"); die(0); }  
         if (~Cur()->Type = "closebrace") { break; }  
 
-        args->Push(ParseStatement());
+        args->Push(ParseStatement()); types <-+ "s";
     }
 
     Consume("closebrace");
 
-    return make Statement("block", args);
+    return make Statement("block", args, types);
 }
 
 function ParseStatement() Statement
@@ -122,29 +128,33 @@ function ParseStatement() Statement
 
     Print("[!] Exprected Statement, got: " + ~Cur()->Type + " [Line: " + string(GetLineNum(~Cur()->Pos)) + "]");
     die(0);
-    return make Statement("nil", make any array(0));
+    return make Statement("nil", make any array(0), "");
 }
 
 function ParseCall() Statement
 {
     var args <- make any array(0);
-    args->Push(Consume("identifier"));
+    var types <- "";
+
+    args->Push(Consume("identifier")); types <-+ "t";
     Consume("openparenthesis");
-    args->Push(ParseArguments());
+    args->Push(ParseArguments()); types <-+ "s";
     Consume("closeparenthesis");
     Consume("semicolon");
 
-    return make Statement("call", args);
+    return make Statement("call", args, types);
 }
 
 function ParseReturn() Statement
 {
     var returnkw <- Consume("returnkw");
     var args <- make any array(0);
-    args->Push(ParseExpression());
+    var types <- "";
+
+    args->Push(ParseExpression()); types <-+ "e";
     Consume("semicolon");
 
-    return make Statement(returnkw->Value, args);
+    return make Statement(returnkw->Value, args, types);
 }
 
 function Cur() Token { return Pek(0); }
