@@ -1,4 +1,3 @@
-set BoundStatements <- make BoundStatement array(0);
 set FunctionSymbols <- make FunctionSymbol array(0);
 
 function Bind()
@@ -20,17 +19,50 @@ function Bind()
     // binding all Functions
     from (i <- 0) to Statements->GetLength() -1
     {
-        BoundStatements->Push(BindFunctionStatement(Statements[i]));
+        BindFunctionStatement(Statements[i]);
     }
 }
 
-function BindStatement(stmt Statement, fn FunctionSymbol) BoundStatements
+function BindStatement(stmt Statement, fn FunctionSymbol) BoundStatement
 {
     if (stmt->Name = "call")
         return BindCallStatement(stmt, fn);
-    if (stmt->Name = "return")
-        return BindReturnStatement(stmt, fn);
+    //if (stmt->Name = "return")
+        //return BindReturnStatement(stmt, fn);
     Print("[!] Expecting Statement, got: " + stmt->Name);
+    die(0);
+    return make BoundStatement("", make any array(0), "", "void");
+}
+
+function BindExpression(ex Expression, fn FunctionSymbol) BoundExpression
+{
+    if (ex->Type = "string")
+        return make BoundExpression("string", ex->Value, BoundExpression(nil), BoundExpression(nil), "string");
+    if (ex->Type = "int")
+        return make BoundExpression("int", ex->Value, BoundExpression(nil), BoundExpression(nil), "int");
+    if (ex->Type = "bool")
+        return make BoundExpression("bool", ex->Value, BoundExpression(nil), BoundExpression(nil), "bool");
+    if (ex->Type = "variable")
+        return BindVariableExpression(ex, fn);
+
+    Print("[!] Expecting Expression, got: " + ex->Type);
+    die(0);
+    return make BoundExpression("", "", BoundExpression(nil), BoundExpression(nil), "");
+}
+
+function BindVariableExpression(ex Expression, fn FunctionSymbol) BoundExpression
+{
+    var param <- fn->GetParamIndex(string(ex->Value));
+
+    if (param = -1)
+    {
+        Print("Couldnt find Variable " + string(ex->Value) + "!");
+        die(0);
+        return make BoundExpression("", "", BoundExpression(nil), BoundExpression(nil), "");
+    }
+
+    var paramSym <- fn->GetParam(param);
+    return make BoundExpression("parameter", paramSym, BoundExpression(nil), BoundExpression(nil), paramSym->Type);
 }
 
 function BindCallStatement(stmt Statement, fn FunctionSymbol) BoundStatement
@@ -39,19 +71,37 @@ function BindCallStatement(stmt Statement, fn FunctionSymbol) BoundStatement
     var functionSymbol <- GetFunctionSymbol(~Token(stmtargs[0])->Value);
     var args <- Statement(stmtargs[1]);
 
-    if (~args->Args->GetLength() != ~functionSymbol->Parameters->GetLength())
+    var amount <- functionSymbol->GetParamAmount();
+
+    if (~args->Args->GetLength() != amount)
     {
-        Print("[!] Wrong Number of Arguments! Function " + functionSymbol->Name + " expected " + string(~functionSymbol->Parameters->GetLength()) + " Args but got " + ~args->Args->GetLength() + "!");
+        Print("[!] Wrong Number of Arguments! Function " + functionSymbol->Name + " expected " + string(amount) + " Args but got " + string(~args->Args->GetLength()) + "!");
         die(0);
     }
 
     var newArgs <- make any array(0);
     newArgs->Push(functionSymbol);
 
-    return make BoundStatement("call", newArgs, functionSymbol->Type);
+    var expargs <- args->Args;
+
+    from (i <- 0) to expargs->GetLength() - 1
+    {
+        var bexp <- BindExpression(Expression(expargs[i]), fn);
+
+        //check if the Datatypes of the given expression matches whats expected
+        if (bexp->Type != ~functionSymbol->GetParam(i)->Type)
+        {
+            Print("[!] Function " + functionSymbol->Name + " expects a " + ~functionSymbol->GetParam(i)->Type + " as Argument Nr " + string(i) + ". (Got: " + bexp->Type + ")");
+            die(0);
+        }
+        newArgs->Push(bexp);
+    }
+
+    return make BoundStatement("call", newArgs, "", functionSymbol->Type);
+    //return make BoundStatement("call", make any array(0), "", "");
 }
 
-function BindFunctionStatement(stmt Statement) BoundStatement
+function BindFunctionStatement(stmt Statement)
 {
     var args <- stmt->Args;
     var blockStatementArgs <- ~Statement(args[3])->Args;
@@ -91,6 +141,7 @@ function GetFunctionSymbol(name string) FunctionSymbol
         
     Print("[!] Could not find Function " + name);
     die(0);
+    return FunctionSymbols[0];
 }
 
 function FunctionExists(name string) bool

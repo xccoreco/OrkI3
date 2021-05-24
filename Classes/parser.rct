@@ -1,5 +1,4 @@
 set Statements <- make Statement array(0);
-set FunctionSymbols <- make FunctionSymbol array(0);
 
 function Parse()
 {

@@ -12,4 +12,19 @@ class FunctionSymbol
     {
         return Parameters[index];
     }
+
+    set function GetParamAmount() int
+    {
+        return Parameters->GetLength();
+    }
+
+    set function GetParamIndex(name string) int
+    {
+        from (i <- 0) to Parameters->GetLength()
+        {
+            if (~Parameters[i]->Name = name) return i;
+        }
+
+        return -1;
+    }
 }

@@ -1,0 +1,6 @@
+var params <- make ParameterSymbol array(0);
+
+params <- make ParameterSymbol array(0); params->Push(make ParameterSymbol("text", "string"));
+var print <- make FunctionSymbol("print", params, "void", false);
+
+FunctionSymbols->Push(print);

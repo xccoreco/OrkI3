@@ -6,6 +6,7 @@ package io;
 #attach("./lexer.rct");
 #attach("./parser.rct");
 #attach("./binder.rct");
+#attach("./builtinfuncs.rct");
 
 // TypeDefs
 #attach("./Types/keywords.rct");
@@ -88,3 +89,26 @@ function PrintStatement(stmt Statement, off string)
         }
     }
 }
+
+Bind();
+
+Print(Char(10) + "Binder Output:");
+from (i <- 0) to FunctionSymbols->GetLength() -1
+{
+    SetConsoleForeground(15);
+    Write("|-> "); SetConsoleForeground(9);
+    Write("function " SetConsoleForeground(12);
+    Write(~FunctionSymbols[i]->Name ); SetConsoleForeground(9);
+    Write(" of type "); SetConsoleForeground(14);
+    Print(~FunctionSymbols[i]->Type); SetConsoleForeground(15);
+    Write("|   └-> "); SetConsoleForeground(9);
+    Write("params: "); SetConsoleForeground(10);
+
+    from (ii <- 0) to ~FunctionSymbols[i]->GetParamAmount() -1
+    {
+        Write(~~FunctionSymbols[i]->GetParam(ii)->Type + " ");
+    }
+    SetConsoleForeground(15);
+    Print(Char(10) + "|");
+}
+Print("v");
