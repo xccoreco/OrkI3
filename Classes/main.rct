@@ -8,8 +8,8 @@ package io;
 #attach("./lexer.rct");
 #attach("./parser.rct");
 
-//copyFolder("C:\Users\djlw7\Desktop\OrkI3\res");
-#copyFolder("/home/redcube/git/OrkI3/res");
+//copyFolder("C:\Users\djlw7\Desktop\OrkI3\Resources");
+#copyFolder("/home/redcube/git/OrkI3/Resources");
 
 Print("ORKI3 Interpreter --  written in ReCT");
 

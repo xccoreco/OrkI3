@@ -1,6 +1,6 @@
-rm ./build/ork.dll
-rctc ./classes/main.rct -s -f -o ./build/ork.dll
+rm ./Build/ork.dll
+rctc ./Classes/main.rct -s -f -o ./Build/ork.dll
 echo ""
 echo " -- [ ReCT Output ] -- "
 echo ""
-dotnet ./build/ork.dll
+dotnet ./Build/ork.dll

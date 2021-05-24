@@ -1,0 +1,5 @@
+func main(): bool
+{
+    print("stuff");
+    return 0;
+}
