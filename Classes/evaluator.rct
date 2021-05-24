@@ -1,0 +1,85 @@
+
+function Evaluate()
+{
+    EvaluateFunction(MainFunction(), make any array(0));    
+}
+
+function EvaluateFunction(fn FunctionSymbol, params anyArr) any
+{
+    var bstatements <- fn->BStatements; 
+    from (i <- 0) to bstatements->GetLength() -1
+    {
+        var res <- EvaluateStatment(bstatements[i], fn, params);
+
+        if (res = nil) continue;
+        if (fn->Type != "void")
+        {
+            return res;
+        }
+
+        return nil;
+    }
+
+    return nil;
+}
+
+function EvaluateStatment(stmt BoundStatement, fn FunctionSymbol, params anyArr) any
+{
+    var args <- stmt->Args;
+
+    if (stmt->Name = "call")
+    {
+        EvaluateFunction(FunctionSymbol(args[0]), EvaluateParams(anyArr(args[1]), fn, params));
+        return nil;
+    }
+    else if (stmt->Name = "return")
+    {
+        if (fn->Type != "void")
+        {
+            return EvaluateExpression(BoundExpression(args[0]), params);
+        }
+
+        Print("void return");
+        return true;
+    }
+
+    return nil;
+}
+
+function EvaluateParams(paramsarr anyArr, fn FunctionSymbol, params anyArr) anyArr
+{
+    var newParams <- make any array(0);
+    from (i <- 0) to paramsarr->GetLength() -1
+    {
+        newParams->Push(EvaluateExpression(BoundExpression(paramsarr[i]), params));
+    }
+    return newParams;
+}
+
+function EvaluateExpression(ex BoundExpression, params anyArr) any
+{
+    if (ex->eType = "string") return ex->Value;
+    if (ex->eType = "int") return ex->Value;
+    if (ex->eType = "bool") return ex->Value;
+    if (ex->eType = "parameter") return params[int(ex->Value)];
+    if (ex->eType = "call") 
+    {
+        var info <- anyArr(ex->Value);
+        return EvaluateFunction(FunctionSymbol(info[0]), anyArr(info[1]));
+    }
+
+    Print("[!] Couldnt Evaluate Expression: " + ex->Type);
+    return nil;
+}
+
+function MainFunction() FunctionSymbol
+{
+    from (i <- 0) to FunctionSymbols->GetLength() -1
+    {
+        if (~FunctionSymbols[i]->IsMain) return FunctionSymbols[i];
+    }
+
+    Print("[!] File doesnt have Main Function!");
+    die(0);
+    return FunctionSymbols[0];
+}

@@ -6,6 +6,8 @@ class FunctionSymbol
         set Parameters <- parameters;
         set Type <- ftype;
         set IsMain <- ismain;
+
+        set BStatements <- make BoundStatement array(0);
     }
 
     set function GetParam(index int) ParameterSymbol

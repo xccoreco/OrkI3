@@ -31,7 +31,7 @@ function BindStatement(stmt Statement, fn FunctionSymbol) BoundStatement
         return BindReturnStatement(stmt, fn);
     Print("[!] Expecting Statement, got: " + stmt->Name);
     die(0);
-    return make BoundStatement("", make any array(0), "", "void");
+    return make BoundStatement("", make any array(0), "void");
 }
 
 function BindExpression(ex Expression, fn FunctionSymbol) BoundExpression
@@ -64,12 +64,16 @@ function BindVariableExpression(ex Expression, fn FunctionSymbol) BoundExpressio
     }
 
     var paramSym <- fn->GetParam(param);
-    return make BoundExpression("parameter", paramSym, BoundExpression(nil), BoundExpression(nil), paramSym->Type);
+
+    return make BoundExpression("parameter", param, BoundExpression(nil), BoundExpression(nil), paramSym->Type);
 }
 
 function BindCallExpression(ex Expression, fn FunctionSymbol) BoundExpression
 {
     var call <- BindCallStatement(Statement(ex->Value), fn);
+    var args <- call->Args;
+    var functionSymbol <- FunctionSymbol(args[0]);
+    var params <- anyArr(args[1]);
 
     if (call->Type = "void")
     {
@@ -78,7 +82,11 @@ function BindCallExpression(ex Expression, fn FunctionSymbol) BoundExpression
         return make BoundExpression("", "", BoundExpression(nil), BoundExpression(nil), "");
     }
 
-    return make BoundExpression("call", call, BoundExpression(nil), BoundExpression(nil), call->Type);
+    var info <- make any array(2);
+    info[0] <- functionSymbol;
+    info[1] <- params;
+
+    return make BoundExpression("call", info, BoundExpression(nil), BoundExpression(nil), call->Type);
 }
 
 function BindCallStatement(stmt Statement, fn FunctionSymbol) BoundStatement
@@ -98,6 +106,8 @@ function BindCallStatement(stmt Statement, fn FunctionSymbol) BoundStatement
     var newArgs <- make any array(0);
     newArgs->Push(functionSymbol);
 
+    var param <- make any array(0);
+
     var expargs <- args->Args;
 
     from (i <- 0) to expargs->GetLength() - 1
@@ -110,10 +120,12 @@ function BindCallStatement(stmt Statement, fn FunctionSymbol) BoundStatement
             Print("[!] Function " + functionSymbol->Name + " expects a " + ~functionSymbol->GetParam(i)->Type + " as Argument Nr " + string(i) + ". (Got: " + bexp->Type + ")");
             die(0);
         }
-        newArgs->Push(bexp);
+        param->Push(bexp);
     }
 
-    return make BoundStatement("call", newArgs, "", functionSymbol->Type);
+    newArgs->Push(expargs);
+
+    return make BoundStatement("call", newArgs, functionSymbol->Type);
 }
 
 function BindReturnStatement(stmt Statement, fn FunctionSymbol) BoundStatement
@@ -129,14 +141,14 @@ function BindReturnStatement(stmt Statement, fn FunctionSymbol) BoundStatement
     {
         Print("[!] Return is missing a value!");
         die(0);
-        return make BoundStatement("", make any array(0), "", "");
+        return make BoundStatement("", make any array(0), "");
     }
 
     if (fn->Type = "void" && !noExp)
     {
         Print("[!] Return isnt supposed to return something in void function!");
         die(0);
-        return make BoundStatement("", make any array(0), "", "");
+        return make BoundStatement("", make any array(0), "");
     }
 
     if (!noExp)
@@ -144,13 +156,13 @@ function BindReturnStatement(stmt Statement, fn FunctionSymbol) BoundStatement
     {
         Print("[!] Return type doesnt match type of Function!");
         die(0);
-        return make BoundStatement("", make any array(0), "", "");
+        return make BoundStatement("", make any array(0), "");
     }
 
     var newargs <- make any array(0);
     newargs->Push(exp);
 
-    return make BoundStatement("return", newargs, "", fn->Type);
+    return make BoundStatement("return", newargs, fn->Type);
 }
 
 function BindFunctionStatement(stmt Statement)
@@ -164,6 +176,8 @@ function BindFunctionStatement(stmt Statement)
     {
         boundStatements->Push(BindStatement(Statement(blockStatementArgs[i]), func));
     }
+
+    ~FunctionSymbols[GetFunctionSymbolIndex(~Token(args[0])->Value)]->BStatements <- boundStatements;
 }
 
 function CreateFunctionSymbol(args anyArr) FunctionSymbol
@@ -194,6 +208,17 @@ function GetFunctionSymbol(name string) FunctionSymbol
     Print("[!] Could not find Function " + name);
     die(0);
     return FunctionSymbols[0];
+}
+
+function GetFunctionSymbolIndex(name string) int
+{
+    from (i <- 0) to FunctionSymbols->GetLength() -1
+        if (~FunctionSymbols[i]->Name = name)
+            return i;
+        
+    Print("[!] Could not find Function " + name);
+    die(0);
+    return -1;
 }
 
 function FunctionExists(name string) bool

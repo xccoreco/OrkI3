@@ -6,6 +6,7 @@ package io;
 #attach("./lexer.rct");
 #attach("./parser.rct");
 #attach("./binder.rct");
+#attach("./evaluator.rct");
 #attach("./builtinfuncs.rct");
 
 // TypeDefs
@@ -118,3 +119,5 @@ from (i <- 0) to FunctionSymbols->GetLength() -1
     Print(Char(10) + "|");
 }
 Print("v");
+
+Evaluate();
