@@ -1,10 +1,12 @@
 func mainfunc(): main
 {
-    print(secondfunc("Hello World!"));
+    loop(getint())
+    {
+        print("test");
+    }
 }
 
-func secondfunc(text: string): string
+func getint(): int
 {
-    print(text);
-    return text;
+    return 3;
 }

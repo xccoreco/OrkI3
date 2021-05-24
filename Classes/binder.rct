@@ -27,6 +27,10 @@ function BindStatement(stmt Statement, fn FunctionSymbol) BoundStatement
 {
     if (stmt->Name = "call")
         return BindCallStatement(stmt, fn);
+    if (stmt->Name = "loop")
+        return BindLoopStatement(stmt, fn);
+    if (stmt->Name = "block")
+        return BindBlockStatement(stmt, fn);
     if (stmt->Name = "return")
         return BindReturnStatement(stmt, fn);
     Print("[!] Expecting Statement, got: " + stmt->Name);
@@ -163,6 +167,30 @@ function BindReturnStatement(stmt Statement, fn FunctionSymbol) BoundStatement
     newargs->Push(exp);
 
     return make BoundStatement("return", newargs, fn->Type);
+}
+
+function BindBlockStatement(stmt Statement, fn FunctionSymbol) BoundStatement
+{
+    var args <- stmt->Args;
+    var newArgs <- make any array(0);
+    
+    from (i <- 0) to args->GetLength() -1
+    {
+        newArgs->Push(BindStatement(Statement(args[i]), fn));
+    }
+
+    return make BoundStatement("block", newArgs, "void");
+}
+
+function BindLoopStatement(stmt Statement, fn FunctionSymbol) BoundStatement
+{
+    var newArgs <- make any array(0);
+    var args <- stmt->Args;
+
+    newArgs->Push(BindExpression(Expression(args[0]), fn));
+    newArgs->Push(BindStatement(Statement(args[1]), fn));
+
+    return make BoundStatement("loop", newArgs, "void");
 }
 
 function BindFunctionStatement(stmt Statement)

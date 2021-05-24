@@ -135,10 +135,26 @@ function ParseStatement() Statement
         return ParseCall(false);
     else if (~Cur()->Type = "returnkw")
         return ParseReturn();
+    else if (~Cur()->Type = "loopkw")
+        return ParseLoop();
 
     Print("[!] Exprected Statement, got: " + ~Cur()->Type + " [Line: " + string(GetLineNum(~Cur()->Pos)) + "]");
     die(0);
     return make Statement("nil", make any array(0), "");
+}
+
+function ParseLoop() Statement
+{
+    var args <- make any array(0);
+    var types <- "";
+
+    Consume("loopkw");
+    Consume("openparenthesis");
+    args->Push(ParseExpression()); types <-+ "e";
+    Consume("closeparenthesis");
+    args->Push(ParseBlockStatement()); types <-+ "s";
+
+    return make Statement("loop", args, types);
 }
 
 function ParseCall(isExpression bool) Statement

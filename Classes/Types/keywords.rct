@@ -4,6 +4,7 @@ Keywords->Push("func");
 Keywords->Push("return");
 Keywords->Push("for");
 Keywords->Push("while");
+Keywords->Push("loop");
 
 //true false
 Keywords->Push("true");

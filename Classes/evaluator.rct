@@ -44,6 +44,19 @@ function EvaluateStatment(stmt BoundStatement, fn FunctionSymbol, params anyArr)
         Print("void return");
         return true;
     }
+    else if (stmt->Name = "block")
+    {
+        from (i <- 0) to args->GetLength() -1
+        {
+            EvaluateStatment(BoundStatement(args[i]), fn, params);
+        }
+    }
+    else if (stmt->Name = "loop")
+    {
+        var loopcount <- int(EvaluateExpression(BoundExpression(args[0]), params));
+        for (var i <- 0; i < loopcount; i++)
+            EvaluateStatment(BoundStatement(args[1]), fn, params);
+    }
 
     return nil;
 }
